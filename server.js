@@ -2,7 +2,19 @@ const express = require('express')
 const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
+const fs = require('fs');
 const { v4: uuidV4 } = require('uuid')
+
+const { PeerServer } = require('peer');
+const peerServer = PeerServer({
+  port: 3001,
+  path: '/',
+  proxied: true,
+  ssl: {
+    key: fs.readFileSync('/etc/letsencrypt/live/provoworstdate.com-0001/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/provoworstdate.com-0001/fullchain.pem')
+  }
+});
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
@@ -27,3 +39,4 @@ io.on('connection', socket => {
 })
 
 server.listen(3000)
+
